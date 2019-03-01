@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
@@ -53,9 +54,62 @@ public class LifecycleMonitorActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d(Constants.TAG, "onSaveInstanceState() method was INVOKED");
+
+        CheckBox checkBox = (CheckBox)findViewById(R.id.remember_me_checkbox);
+        if (!checkBox.isChecked()) {
+            Log.d(Constants.TAG, "checkBox() IS NOT CHECKED");
+            return;
+        }
+
+        EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+        EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+        Log.d(Constants.TAG, "Saved username: " + usernameEditText.getText().toString());
+        Log.d(Constants.TAG, "Saved pass: " + passwordEditText.getText().toString());
+
+        outState.putString("user", usernameEditText.getText().toString());
+        outState.putString("pass", passwordEditText.getText().toString());
+    }
+
+    void restoreState(Bundle savedInstanceState)
+    {
+        if (savedInstanceState == null) {
+            return;
+        }
+
+        EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+        EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+
+        Log.d(Constants.TAG, "USER IS: " + savedInstanceState.getString("user"));
+        Log.d(Constants.TAG, "PASS IS: " + savedInstanceState.getString("pass"));
+
+
+        usernameEditText.setText(savedInstanceState.getString("user"));
+        passwordEditText.setText(savedInstanceState.getString("pass"));
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Log.d(Constants.TAG, "onRestoreInstanceState() method was INVOKED");
+
+        restoreState(savedInstanceState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lifecycle_monitor);
+
+        restoreState(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Log.d(Constants.TAG, "onCreate() FOR THE FIRST TIME");
+        }
 
         Button okButton = (Button) findViewById(R.id.ok_button);
         okButton.setOnClickListener(buttonClickListener);
@@ -63,6 +117,42 @@ public class LifecycleMonitorActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(buttonClickListener);
 
         Log.d(Constants.TAG, "onCreate() method was invoked without a previous state");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(Constants.TAG, "onRestart() method was invoked");
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(Constants.TAG, "onStart() method was invoked");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(Constants.TAG, "onResume() method was invoked");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(Constants.TAG, "onPause() method was invoked");
+        Log.d("MYAPP", "onPause() method was invoked");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(Constants.TAG, "onStop() method was invoked");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(Constants.TAG, "onDestroy() method was invoked");
     }
 
 }
